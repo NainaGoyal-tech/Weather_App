@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nimbus — Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="weather-sunny">
+
+  <!-- ░░ ANIMATED BACKGROUND LAYER ░░ -->
+  <div class="bg-layer" id="bgLayer">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="weather-particles" id="weatherParticles"></div>
+  </div>
+
+  <!-- ░░ MAIN APP SHELL ░░ -->
+  <div class="app-shell" id="appShell">
+
+    <!-- ── TOP BAR ── -->
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-icon">◎</span>
+        <span class="brand-name">Nimbus</span>
+      </div>
+
+      <div class="search-wrapper" id="searchWrapper">
+        <button class="icon-btn search-toggle" id="searchToggle" aria-label="Search city">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <div class="search-panel" id="searchPanel">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search city…" autocomplete="off" spellcheck="false" />
+          <button class="search-go" id="searchGo" aria-label="Go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <ul class="search-suggestions" id="searchSuggestions"></ul>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn unit-toggle" id="unitToggle" title="Toggle °C / °F">°C</button>
+        <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <span class="theme-icon sun">☀</span>
+          <span class="theme-icon moon">☽</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── SKELETON LOADER ── -->
+    <div class="skeleton-screen" id="skeletonScreen">
+      <div class="skel skel-city"></div>
+      <div class="skel skel-temp"></div>
+      <div class="skel skel-cond"></div>
+      <div class="skel-row">
+        <div class="skel skel-stat"></div>
+        <div class="skel skel-stat"></div>
+        <div class="skel skel-stat"></div>
+        <div class="skel skel-stat"></div>
+      </div>
+    </div>
+
+    <!-- ── ERROR STATE ── -->
+    <div class="error-state" id="errorState" hidden>
+      <div class="error-icon">⚠</div>
+      <p class="error-title" id="errorTitle">City not found</p>
+      <p class="error-sub" id="errorSub">Try a different city name</p>
+      <button class="btn-retry" id="btnRetry">Try Again</button>
+    </div>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="weather-main" id="weatherMain" hidden>
+
+      <!-- HERO ─────────────────────────── -->
+      <section class="hero-section">
+        <div class="location-line">
+          <svg class="pin-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <h1 class="city-name" id="cityName">—</h1>
+          <span class="country-badge" id="countryBadge"></span>
+        </div>
+        <p class="local-time" id="localTime"></p>
+
+        <div class="temp-display">
+          <div class="weather-emoji" id="weatherEmoji">🌤</div>
+          <div class="temp-number">
+            <span id="tempValue">—</span><sup class="temp-unit" id="tempUnitLabel">°C</sup>
+          </div>
+        </div>
+
+        <p class="condition-text" id="conditionText">Loading…</p>
+
+        <!-- STATS STRIP -->
+        <div class="stats-strip">
+          <div class="stat-card">
+            <span class="stat-icon">💧</span>
+            <span class="stat-label">Humidity</span>
+            <span class="stat-value" id="humidity">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🌬</span>
+            <span class="stat-label">Wind</span>
+            <span class="stat-value" id="windSpeed">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🌡</span>
+            <span class="stat-label">Feels like</span>
+            <span class="stat-value" id="feelsLike">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⬇</span>
+            <span class="stat-label">Pressure</span>
+            <span class="stat-value" id="pressure">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">👁</span>
+            <span class="stat-label">Visibility</span>
+            <span class="stat-value" id="visibility">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">☀</span>
+            <span class="stat-label">UV Index</span>
+            <span class="stat-value" id="uvIndex">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOURLY FORECAST ─────────────── -->
+      <section class="section-block">
+        <h2 class="section-title">Hourly</h2>
+        <div class="hourly-scroll" id="hourlyScroll">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- TEMPERATURE GRAPH ────────────── -->
+      <section class="section-block">
+        <h2 class="section-title">Temperature Trend</h2>
+        <div class="graph-wrap">
+          <canvas id="tempGraph" class="temp-canvas"></canvas>
+        </div>
+      </section>
+
+      <!-- 7-DAY FORECAST ──────────────── -->
+      <section class="section-block">
+        <h2 class="section-title">7-Day Forecast</h2>
+        <div class="weekly-grid" id="weeklyGrid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- EXTRA INFO ──────────────────── -->
+      <section class="section-block extras-grid">
+        <div class="extra-card sunrise-card">
+          <span class="extra-icon">🌅</span>
+          <span class="extra-label">Sunrise</span>
+          <span class="extra-value" id="sunrise">—</span>
+        </div>
+        <div class="extra-card sunset-card">
+          <span class="extra-icon">🌇</span>
+          <span class="extra-label">Sunset</span>
+          <span class="extra-value" id="sunset">—</span>
+        </div>
+        <div class="extra-card">
+          <span class="extra-icon">🌊</span>
+          <span class="extra-label">Dew Point</span>
+          <span class="extra-value" id="dewPoint">—</span>
+        </div>
+        <div class="extra-card">
+          <span class="extra-icon">🌐</span>
+          <span class="extra-label">Air Quality</span>
+          <span class="extra-value" id="airQuality">—</span>
+        </div>
+      </section>
+
+      <footer class="app-footer">
+        <p>Powered by <a href="https://openweathermap.org" target="_blank" rel="noopener">OpenWeatherMap</a> · Last updated <span id="lastUpdated">—</span></p>
+      </footer>
+
+    </main><!-- /weather-main -->
+
+  </div><!-- /app-shell -->
+
+  <!-- API KEY MODAL (shown if no key) -->
+  <div class="api-modal-overlay" id="apiModalOverlay">
+    <div class="api-modal glass">
+      <div class="modal-icon">🔑</div>
+      <h2 class="modal-title">Enter API Key</h2>
+      <p class="modal-sub">Get a free key at <a href="https://openweathermap.org/api" target="_blank">openweathermap.org</a></p>
+      <input type="text" class="api-input" id="apiKeyInput" placeholder="Paste your API key here…" />
+      <button class="btn-primary" id="apiKeySave">Save & Continue</button>
+      <p class="modal-demo-note">Or <button class="btn-link" id="useDemo">use demo mode</button> (mock data)</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
